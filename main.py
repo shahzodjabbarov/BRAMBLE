@@ -1,8 +1,4 @@
-
-
-
-
-
+print("someitrhg")
 
 
 
