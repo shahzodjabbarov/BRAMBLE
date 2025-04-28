@@ -118,24 +118,23 @@ class MainPage(BackgroundFrame):
     def __init__(self, parent, controller):
         BackgroundFrame.__init__(self, parent, controller, "pics/1.png")
         
-        # Review button with rounded corners
-        review_button = tk.Canvas(self.canvas, width=200, height=80, bg="#4CAF50", highlightthickness=0)
-        review_button.create_oval(0, 0, 200, 80, fill="#4CAF50", outline="")
-        review_button.create_text(100, 40, text="REVIEW", font=("Arial", 18), fill="white")
-        review_button.bind("<Button-1>", lambda e: controller.show_frame(ReviewPage))
-        review_button_window = self.canvas.create_window(250, 300, window=review_button)
+        # Review button with rounded corner
+        review_button = tk.Button(self.canvas, text="REVIEW", font=("Arial", 18), 
+                             width=14, height=2, bg="#4CAF50", fg="white",
+                             command=lambda: controller.show_frame(ReviewPage))
+        review_button_window = self.canvas.create_window(253, 382, window=review_button)
         
         # New Words button
         new_words_button = tk.Button(self.canvas, text="NEW WORDS", font=("Arial", 18), 
-                                width=15, height=4, bg="#2196F3", fg="white",
+                                width=14, height=2, bg="#2196F3", fg="white",
                                 command=lambda: controller.show_frame(NewWordsPage))
-        new_words_button_window = self.canvas.create_window(550, 300, window=new_words_button)
+        new_words_button_window = self.canvas.create_window(547, 382, window=new_words_button)
         
         # History button (small, bottom left)
         history_button = tk.Button(self.canvas, text="HISTORY", font=("Arial", 10),
-                              width=10, height=2, bg="#FFC107",
+                              width=13, height=2, bg="#FFC107",
                               command=lambda: controller.show_frame(HistoryPage))
-        history_button_window = self.canvas.create_window(80, 550, window=history_button)
+        history_button_window = self.canvas.create_window(95, 542, window=history_button)
 
 class ReviewPage(BackgroundFrame):
     def __init__(self, parent, controller):
@@ -343,9 +342,9 @@ class ResultsPage(BackgroundFrame):
         
         # History button (small, bottom right)
         history_button = tk.Button(self.canvas, text="HISTORY", font=("Arial", 10),
-                              width=10, height=2, bg="#FFC107",
+                              width=13, height=2, bg="#FFC107",
                               command=lambda: controller.show_frame(HistoryPage))
-        history_button_window = self.canvas.create_window(720, 550, window=history_button)
+        history_button_window = self.canvas.create_window(700, 542, window=history_button)
     
     def set_content(self, content):
         """Set content for the results page"""
