@@ -177,9 +177,9 @@ class WordEntryPage_Story(BackgroundFrame):
         
         # Text area for word entry
         self.words_text = tk.Text(self.canvas, wrap="word", font=("Arial", 12), 
-                             height=15, width=50)
-        words_text_window = self.canvas.create_window(400, 250, window=self.words_text)
-        
+                             height=11, width=50)
+     # Adjust the height of the input form  
+        words_text_window = self.canvas.create_window(308, 300, window=self.words_text)
         # Enter button
         enter_button = tk.Button(self.canvas, text="ENTER", font=("Arial", 14), 
                             width=10, height=2, bg="#FF5722", fg="white",
@@ -235,16 +235,16 @@ class WordEntryPage_Mnemonics(BackgroundFrame):
     def __init__(self, parent, controller):
         BackgroundFrame.__init__(self, parent, controller, "pics/4.png")
         
-        # Text area for word entry
+        # Text area for word entry  #11, 50, 308, 300
         self.words_text = tk.Text(self.canvas, wrap="word", font=("Arial", 12), 
-                             height=15, width=50)
-        words_text_window = self.canvas.create_window(400, 250, window=self.words_text)
+                             height=11, width=50)
+        words_text_window = self.canvas.create_window(308, 300, window=self.words_text)
         
         # Enter button
-        enter_button = tk.Button(self.canvas, text="ENTER", font=("Arial", 14), 
-                            width=10, height=2, bg="#FF5722", fg="white",
+        enter_button = tk.Button(self.canvas, text="ENTER", font=("Arial", 18), 
+                            width=14, height=2, bg="#FF5722", fg="white",
                             command=lambda: self.process_words("Mnemonics"))
-        enter_button_window = self.canvas.create_window(400, 450, window=enter_button)
+        enter_button_window = self.canvas.create_window(400, 496, window=enter_button)
         
         # Back button (small, bottom left)  #13, 2, 95, 542
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
@@ -292,13 +292,13 @@ class NewWordsPage(BackgroundFrame):
         
         # File name label
         self.file_label = tk.Label(self.canvas, text="No file selected", font=("Arial", 12), bg="#f0f0f0")
-        file_label_window = self.canvas.create_window(400, 200, window=self.file_label)
+        file_label_window = self.canvas.create_window(410, 230, window=self.file_label)
         
         # Upload button
         upload_button = tk.Button(self.canvas, text="UPLOAD", font=("Arial", 18), 
-                             width=15, height=2, bg="#FF5722", fg="white",
+                             width=18, height=2, bg="#FF5722", fg="white",
                              command=lambda: controller.select_file())
-        upload_button_window = self.canvas.create_window(400, 290, window=upload_button)
+        upload_button_window = self.canvas.create_window(402, 287, window=upload_button)
         
         # Quiz button
                  #back: 13, 2, 95, 542
@@ -343,7 +343,7 @@ class ResultsPage(BackgroundFrame):
         
         # Create a frame for the content
         content_frame = tk.Frame(self.canvas, bg="white", bd=1, relief="solid")
-        content_frame_window = self.canvas.create_window(400, 280, window=content_frame, width=600, height=400)
+        content_frame_window = self.canvas.create_window(400, 288, window=content_frame, width=600, height=300)
         
         # Text widget to display results
         self.results_text = tk.Text(content_frame, wrap="word", font=("Arial", 12), 
@@ -375,7 +375,7 @@ class HistoryPage(BackgroundFrame):
         
         # Create a frame for the history list
         self.history_frame = tk.Frame(self.canvas, bg="white", bd=1, relief="solid")
-        history_frame_window = self.canvas.create_window(400, 280, window=self.history_frame, width=600, height=400)
+        history_frame_window = self.canvas.create_window(400, 288, window=self.history_frame, width=600, height=300)
         
         # Listbox to display history
         self.history_list = tk.Listbox(self.history_frame, font=("Arial", 12), 
@@ -390,9 +390,9 @@ class HistoryPage(BackgroundFrame):
         
         # Clear history button (small, bottom right)
         clear_button = tk.Button(self.canvas, text="CLEAR", font=("Arial", 10),
-                            width=10, height=2, bg="#F44336", fg="white",
+                            width=13, height=2, bg="#F44336", fg="white",
                             command=self.clear_history)
-        clear_button_window = self.canvas.create_window(720, 550, window=clear_button)
+        clear_button_window = self.canvas.create_window(700, 542, window=clear_button)
     
     def update_history(self):
         """Update the history listbox"""
