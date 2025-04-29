@@ -142,21 +142,34 @@ class ReviewPage(BackgroundFrame):
         
         # Make Story button
         story_button = tk.Button(self.canvas, text="MAKE STORY", font=("Arial", 18), 
-                            width=15, height=4, bg="#E91E63", fg="white",
+                            width=14, height=2, bg="#E91E63", fg="white",
                             command=lambda: controller.show_frame(WordEntryPage_Story))
-        story_button_window = self.canvas.create_window(250, 300, window=story_button)
+        story_button_window = self.canvas.create_window(253, 382, window=story_button)
         
+        '''
+        review_button = tk.Button(self.canvas, text="REVIEW", font=("Arial", 18), 
+                             width=14, height=2, bg="#4CAF50", fg="white",
+                             command=lambda: controller.show_frame(ReviewPage))
+        review_button_window = self.canvas.create_window(253, 382, window=review_button)
+
+        # New Words button
+        new_words_button = tk.Button(self.canvas, text="NEW WORDS", font=("Arial", 18), 
+                                width=14, height=2, bg="#2196F3", fg="white",
+                                command=lambda: controller.show_frame(NewWordsPage))
+        new_words_button_window = self.canvas.create_window(547, 382, window=new_words_button)
+        
+        '''
         # Mnemonics button
         mnemonics_button = tk.Button(self.canvas, text="MNEMONICS", font=("Arial", 18), 
-                               width=15, height=4, bg="#9C27B0", fg="white",
+                               width=14, height=2, bg="#9C27B0", fg="white",
                                command=lambda: controller.show_frame(WordEntryPage_Mnemonics))
-        mnemonics_button_window = self.canvas.create_window(550, 300, window=mnemonics_button)
+        mnemonics_button_window = self.canvas.create_window(547, 382, window=mnemonics_button)
         
-        # Back button (small, bottom left)
+        # Back button (small, bottom left)  #13, 2, 95, 542
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
-                           width=10, height=2, bg="#9E9E9E",
+                           width=13, height=2, bg="#9E9E9E",
                            command=lambda: [controller.reset_app_state(), controller.show_frame(MainPage)])
-        back_button_window = self.canvas.create_window(80, 550, window=back_button)
+        back_button_window = self.canvas.create_window(95, 542, window=back_button)
 
 class WordEntryPage_Story(BackgroundFrame):
     def __init__(self, parent, controller):
@@ -173,11 +186,11 @@ class WordEntryPage_Story(BackgroundFrame):
                             command=lambda: self.process_words("Story"))
         enter_button_window = self.canvas.create_window(400, 450, window=enter_button)
         
-        # Back button (small, bottom left)
+        # Back button (small, bottom left) #13, 2, 95, 542
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
-                           width=10, height=2, bg="#9E9E9E",
+                           width=13, height=2, bg="#9E9E9E",
                            command=lambda: controller.show_frame(ReviewPage))
-        back_button_window = self.canvas.create_window(80, 550, window=back_button)
+        back_button_window = self.canvas.create_window(95, 542, window=back_button)
     
     def process_words(self, function_type):
         """Process the entered words and show results"""
@@ -233,11 +246,11 @@ class WordEntryPage_Mnemonics(BackgroundFrame):
                             command=lambda: self.process_words("Mnemonics"))
         enter_button_window = self.canvas.create_window(400, 450, window=enter_button)
         
-        # Back button (small, bottom left)
+        # Back button (small, bottom left)  #13, 2, 95, 542
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
-                           width=10, height=2, bg="#9E9E9E",
+                           width=13, height=2, bg="#9E9E9E",
                            command=lambda: controller.show_frame(ReviewPage))
-        back_button_window = self.canvas.create_window(80, 550, window=back_button)
+        back_button_window = self.canvas.create_window(95, 542, window=back_button)
     
     def process_words(self, function_type):
         """Process the entered words and show results"""
@@ -282,28 +295,31 @@ class NewWordsPage(BackgroundFrame):
         file_label_window = self.canvas.create_window(400, 200, window=self.file_label)
         
         # Upload button
-        upload_button = tk.Button(self.canvas, text="UPLOAD", font=("Arial", 16), 
+        upload_button = tk.Button(self.canvas, text="UPLOAD", font=("Arial", 18), 
                              width=15, height=2, bg="#FF5722", fg="white",
                              command=lambda: controller.select_file())
-        upload_button_window = self.canvas.create_window(400, 280, window=upload_button)
+        upload_button_window = self.canvas.create_window(400, 290, window=upload_button)
         
         # Quiz button
-        quiz_button = tk.Button(self.canvas, text="QUIZ", font=("Arial", 14), 
-                           width=10, height=2, bg="#3F51B5", fg="white",
+                 #back: 13, 2, 95, 542
+         #left: 14, 2, 253, 382
+         #right: 14, 2, 547, 382
+        quiz_button = tk.Button(self.canvas, text="QUIZ", font=("Arial", 18), 
+                           width=14, height=2, bg="#3F51B5", fg="white",
                            command=lambda: self.show_results("Quiz"))
-        quiz_button_window = self.canvas.create_window(300, 380, window=quiz_button)
+        quiz_button_window = self.canvas.create_window(255, 409, window=quiz_button)
         
         # Notes button
-        notes_button = tk.Button(self.canvas, text="NOTES", font=("Arial", 14), 
-                            width=10, height=2, bg="#009688", fg="white",
+        notes_button = tk.Button(self.canvas, text="NOTES", font=("Arial", 18), 
+                            width=14, height=2, bg="#009688", fg="white",
                             command=lambda: self.show_results("Notes"))
-        notes_button_window = self.canvas.create_window(500, 380, window=notes_button)
+        notes_button_window = self.canvas.create_window(548, 409, window=notes_button)
         
-        # Back button (small, bottom left)
+        # Back button (small, bottom left)  #13, 2, 95, 542
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
-                           width=10, height=2, bg="#9E9E9E",
+                           width=13 , height=2, bg="#9E9E9E",
                            command=lambda: [controller.reset_app_state(), controller.show_frame(MainPage)])
-        back_button_window = self.canvas.create_window(80, 550, window=back_button)
+        back_button_window = self.canvas.create_window(95, 542, window=back_button)
     
     def show_results(self, function_type):
         """Show results and navigate to results page"""
@@ -334,11 +350,11 @@ class ResultsPage(BackgroundFrame):
                                padx=10, pady=10)
         self.results_text.pack(fill="both", expand=True)
         
-        # Back button (small, bottom left)
+        # Back button (small, bottom left)  #13, 2, 95, 542
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
-                           width=10, height=2, bg="#9E9E9E",
+                           width=13, height=2, bg="#9E9E9E",
                            command=lambda: [controller.reset_app_state(), controller.show_frame(MainPage)])
-        back_button_window = self.canvas.create_window(80, 550, window=back_button)
+        back_button_window = self.canvas.create_window(95, 542, window=back_button)
         
         # History button (small, bottom right)
         history_button = tk.Button(self.canvas, text="HISTORY", font=("Arial", 10),
@@ -366,11 +382,11 @@ class HistoryPage(BackgroundFrame):
                                    height=20, width=70)
         self.history_list.pack(fill="both", expand=True, padx=10, pady=10)
         
-        # Back button (small, bottom left)
+        # Back button (small, bottom left)  #13, 2, 95, 542
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
-                           width=10, height=2, bg="#9E9E9E",
+                           width=13, height=2, bg="#9E9E9E",
                            command=lambda: controller.show_frame(MainPage))
-        back_button_window = self.canvas.create_window(80, 550, window=back_button)
+        back_button_window = self.canvas.create_window(95, 542, window=back_button)
         
         # Clear history button (small, bottom right)
         clear_button = tk.Button(self.canvas, text="CLEAR", font=("Arial", 10),
