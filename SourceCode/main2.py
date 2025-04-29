@@ -181,10 +181,10 @@ class WordEntryPage_Story(BackgroundFrame):
      # Adjust the height of the input form  
         words_text_window = self.canvas.create_window(308, 300, window=self.words_text)
         # Enter button
-        enter_button = tk.Button(self.canvas, text="ENTER", font=("Arial", 14), 
-                            width=10, height=2, bg="#FF5722", fg="white",
+        enter_button = tk.Button(self.canvas, text="ENTER", font=("Arial", 18), 
+                            width=14, height=2, bg="#FF5722", fg="white",
                             command=lambda: self.process_words("Story"))
-        enter_button_window = self.canvas.create_window(400, 450, window=enter_button)
+        enter_button_window = self.canvas.create_window(400, 496, window=enter_button)
         
         # Back button (small, bottom left) #13, 2, 95, 542
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
