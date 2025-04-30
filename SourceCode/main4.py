@@ -215,21 +215,8 @@ class WordEntryPage_Story(BackgroundFrame):
         self.controller.show_frame(ResultsPage)
     
     def create_story(self, words):
-        """Create a simple story using the provided words"""
-        # This is a placeholder - you will implement your own backend
-        story_parts = ["Once upon a time, there was a student who needed to learn new words."]
-        
-        for i, word in enumerate(words):
-            if i % 3 == 0:
-                story_parts.append(f"The student discovered the word '{word}' while reading a book.")
-            elif i % 3 == 1:
-                story_parts.append(f"Then, the student used '{word}' in a conversation.")
-            else:
-                story_parts.append(f"Later, the student wrote '{word}' in an essay.")
-        
-        story_parts.append("With practice, the student mastered all these words!")
-        
-        return " ".join(story_parts)
+        ai_story_text = story_ai(words)
+        return ai_story_text
 
 class WordEntryPage_Mnemonics(BackgroundFrame):
     def __init__(self, parent, controller):
@@ -277,7 +264,7 @@ class WordEntryPage_Mnemonics(BackgroundFrame):
     def create_mnemonics(self, words):
         """Create simple mnemonics for the provided words"""
         # This is a placeholder - you will implement your own backend
-        result = make_mnemonics(words)
+        result = mnemonics_ai(words)
         return "\n".join(result)
 
 class NewWordsPage(BackgroundFrame):
