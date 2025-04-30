@@ -103,6 +103,7 @@ def quiz_ai(text: str):
         raise ValueError(f"Mismatch between number of questions ({len(quiz)}) and answers ({len(answers)}).")
     return quiz, answers
 
+
 def notes_ai(text: str) -> str:
     prompt = """
     You are an expert educational assistant tasked with creating concise study notes based on the content of a user-uploaded file, typically a presentation (e.g., PowerPoint, PDF) provided by university professors.
