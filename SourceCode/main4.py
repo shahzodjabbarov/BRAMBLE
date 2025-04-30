@@ -11,7 +11,6 @@ class StudyApp(tk.Tk):
         self.title("Study Helper App")
         self.geometry("800x600")
         self.resizable(False, False)
-        
         # Create a container frame
         self.container = tk.Frame(self)
         self.container.pack(fill="both", expand=True)
