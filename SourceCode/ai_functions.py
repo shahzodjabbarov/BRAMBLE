@@ -130,9 +130,9 @@ def notes_ai(text: str) -> str:
        - Ensure the notes are clear, organized, and useful for studying.
     **Important: Only return a JSON object with the following exact structure:**
     ```json
-    {
-      "notes": ["Summary: ...", "- Bullet point 1", "- Bullet point 2", "..."]
-    }
+        1. Bullet point 1
+        2. Bullet point 2
+        3. Bullet point 3
     ```
     Ensure each note (summary and bullet points) is a single string.
     """
