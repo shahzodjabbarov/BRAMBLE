@@ -77,11 +77,15 @@ def quiz_ai(text: str):
        - Use a professional academic tone.
        - Make the quiz engaging and challenging but fair.
     **Important: Only return a JSON object with the following exact structure:**
-    ```json
-    {
-      "quiz": ["Question 1: ...", "Question 2: ...", "..."],
-      "answers": ["Answer 1: ...", "Answer 2: ...", "..."]
-    }
+    ```
+    Questions:
+    1. Question 1: ...
+    2. Question 2: ...
+    ...
+    Answers:
+    1. Answer 1: ...
+    2. Answer 2: ...
+    ...
     ```
     Ensure each question and answer is a single string, even for complex answers.
     """
