@@ -45,7 +45,7 @@ def extract_text_from_file(filepath: str) -> str:
     else:
         raise ValueError("Unsupported file format")
 
-def generate_quiz_and_answers(text: str) -> dict:
+def quiz_ai(text: str):
     prompt = """
     You are an expert educational assistant tasked with creating a quiz based on the content of a user-uploaded file, typically a presentation (e.g., PowerPoint, PDF) provided by university professors.
     Your goal is to generate a short quiz to test understanding of the key concepts, facts, and ideas in the presentation.
@@ -101,9 +101,10 @@ def generate_quiz_and_answers(text: str) -> dict:
     answers = [str(a).strip() for a in data["answers"]]
     if len(quiz) != len(answers):
         raise ValueError(f"Mismatch between number of questions ({len(quiz)}) and answers ({len(answers)}).")
-    return {"quiz": quiz, "answers": answers}
+    return quiz, answers
 
-def generate_notes(text: str) -> str:
+
+def notes_ai(text: str) -> str:
     prompt = """
     You are an expert educational assistant tasked with creating concise study notes based on the content of a user-uploaded file, typically a presentation (e.g., PowerPoint, PDF) provided by university professors.
     Your goal is to generate a short summary with bullet points highlighting the key concepts, facts, definitions, theories, and examples in the content.
@@ -152,7 +153,7 @@ def generate_notes(text: str) -> str:
         raise ValueError("No notes generated.")
     return "\n\n".join(notes)
 
-def generate_mnemonics(words: list) -> str:
+def mnemonics_ai(words: list) -> str:
     prompt = """
     You are an expert educational assistant tasked with creating mnemonic aids for a list of user-provided words to help with memorization.
     Your goal is to generate creative and effective mnemonics using techniques such as acronyms, associations, imagery, or rhymes.
@@ -205,7 +206,7 @@ def generate_mnemonics(words: list) -> str:
         raise ValueError("No mnemonics generated.")
     return "\n\n".join(mnemonics)
 
-def generate_story(words: list) -> str:
+def story_ai(words: list) -> str:
     prompt = """
     You are a creative storytelling assistant tasked with generating an engaging story based on a list of user-provided words.
     Your goal is to create a coherent and imaginative narrative (300-500 words) that incorporates all the provided words in a meaningful way.
