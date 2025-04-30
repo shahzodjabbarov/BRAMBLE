@@ -4,6 +4,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import os
 import sys
+from ai_functions import mnemonics_ai, story_ai, quiz_ai, notes_ai
 
 class StudyApp(tk.Tk):
     def __init__(self):
@@ -276,13 +277,7 @@ class WordEntryPage_Mnemonics(BackgroundFrame):
     def create_mnemonics(self, words):
         """Create simple mnemonics for the provided words"""
         # This is a placeholder - you will implement your own backend
-        result = []
-        
-        for word in words:
-            result.append(f"Word: {word}")
-            result.append(f"Mnemonic: Think of each letter in '{word}' as the start of a word in a sentence.")
-            result.append("")
-        
+        result = make_mnemonics(words)
         return "\n".join(result)
 
 class NewWordsPage(BackgroundFrame):
