@@ -133,6 +133,7 @@ def notes_ai(text: str) -> str:
         1. Bullet point 1
         2. Bullet point 2
         3. Bullet point 3
+        ...
     ```
     Ensure each note (summary and bullet points) is a single string.
     """
