@@ -397,11 +397,6 @@ class ResultsPage(BackgroundFrame):
                            command=lambda: [controller.reset_app_state(), controller.show_frame(MainPage)])
         back_button_window = self.canvas.create_window(95, 542, window=back_button)
         
-        # Save button (new feature)
-        save_button = tk.Button(self.canvas, text="SAVE", font=("Arial", 10),
-                           width=13, height=2, bg="#4CAF50", fg="white",
-                           command=self.save_current_content)
-        save_button_window = self.canvas.create_window(398, 542, window=save_button)
         
         # History button (small, bottom right)
         history_button = tk.Button(self.canvas, text="HISTORY", font=("Arial", 10),
@@ -420,42 +415,6 @@ class ResultsPage(BackgroundFrame):
         self.results_text.insert("end", content)
         self.results_text.config(state="disabled")
     
-    def save_current_content(self):
-        """Manually save the current content to history file"""
-        if self.current_content:
-            try:
-                timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                filename = f"{timestamp}_manual_save.txt"
-                filepath = os.path.join(HISTORY_FOLDER, filename)
-                
-                # Ensure directory exists
-                if not os.path.exists(HISTORY_FOLDER):
-                    os.makedirs(HISTORY_FOLDER)
-                
-                with open(filepath, 'w', encoding='utf-8') as f:
-                    f.write(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-                    f.write("Action: Manual save of content\n")
-                    f.write("-" * 50 + "\n\n")
-                    f.write(self.current_content)
-                
-                messagebox.showinfo("Success", "Content saved to history!")
-                print(f"Manually saved content to: {filepath}")
-                
-                # Update history in memory
-                self.controller.history.append(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Manual save")
-                
-                # Update history page if it exists
-                if hasattr(self.controller, 'frames') and HistoryPage in self.controller.frames:
-                    self.controller.frames[HistoryPage].update_history()
-                
-            except Exception as e:
-                error_msg = f"Could not save content: {e}\n{traceback.format_exc()}"
-                messagebox.showerror("Error", error_msg)
-                print(error_msg)
-        else:
-            messagebox.showinfo("Info", "No content to save")
-            print("No content to save")
-
 class HistoryPage(BackgroundFrame):
     def __init__(self, parent, controller):
         BackgroundFrame.__init__(self, parent, controller, "pics/7.png")
@@ -489,11 +448,6 @@ class HistoryPage(BackgroundFrame):
                             command=self.clear_history)
         clear_button_window = self.canvas.create_window(700, 542, window=clear_button)
         
-        # Force refresh button (for debugging)
-        refresh_button = tk.Button(self.canvas, text="REFRESH", font=("Arial", 10),
-                            width=13, height=2, bg="#4CAF50", fg="white",
-                            command=self.update_history)
-        refresh_button_window = self.canvas.create_window(398, 542, window=refresh_button)
     
     def update_history(self):
         """Update the history display by reading files from the history folder"""
