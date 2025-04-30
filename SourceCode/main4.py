@@ -211,7 +211,7 @@ class WordEntryPage_Story(BackgroundFrame):
         results_frame.set_content(f"Story using your words:\n\n{story}")
         self.controller.add_to_history("Generated a story with custom words")
         
-        # Show results page
+        # Show results pages.
         self.controller.show_frame(ResultsPage)
     
     def create_story(self, words):
