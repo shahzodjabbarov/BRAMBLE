@@ -4,6 +4,20 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import os
 import sys
+from openai import OpenAI
+from dotenv import load_dotenv
+import json
+import re
+
+# Load environment variables
+load_dotenv()
+api_key = os.getenv("OPENROUTER_API_KEY")
+
+# Initialize OpenAI client for OpenRouter
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=api_key,
+)
 
 class StudyApp(tk.Tk):
     def __init__(self):
@@ -11,7 +25,6 @@ class StudyApp(tk.Tk):
         self.title("Study Helper App")
         self.geometry("800x600")
         self.resizable(False, False)
-        
         # Create a container frame
         self.container = tk.Frame(self)
         self.container.pack(fill="both", expand=True)
@@ -81,6 +94,22 @@ class StudyApp(tk.Tk):
         # Reset current function
         self.current_function = ""
 
+def extract_text_from_file(filepath: str) -> str:
+    """Extract text from .txt or .csv files"""
+    ext = os.path.splitext(filepath)[-1].lower()
+    if ext in ['.txt', '.csv']:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            return f.read()
+    else:
+        raise ValueError("Unsupported file format")
+
+def extract_json_string(response_str):
+    """Extract valid JSON string from the response"""
+    json_match = re.search(r'{\s*".*?\}\s*}', response_str, re.DOTALL)
+    if json_match:
+        return json_match.group()
+    raise ValueError("No valid JSON object found in the response.")
+
 class BackgroundFrame(tk.Frame):
     """Base class for frames with background images"""
     def __init__(self, parent, controller, bg_image_path):
@@ -146,26 +175,13 @@ class ReviewPage(BackgroundFrame):
                             command=lambda: controller.show_frame(WordEntryPage_Story))
         story_button_window = self.canvas.create_window(253, 382, window=story_button)
         
-        '''
-        review_button = tk.Button(self.canvas, text="REVIEW", font=("Arial", 18), 
-                             width=14, height=2, bg="#4CAF50", fg="white",
-                             command=lambda: controller.show_frame(ReviewPage))
-        review_button_window = self.canvas.create_window(253, 382, window=review_button)
-
-        # New Words button
-        new_words_button = tk.Button(self.canvas, text="NEW WORDS", font=("Arial", 18), 
-                                width=14, height=2, bg="#2196F3", fg="white",
-                                command=lambda: controller.show_frame(NewWordsPage))
-        new_words_button_window = self.canvas.create_window(547, 382, window=new_words_button)
-        
-        '''
         # Mnemonics button
         mnemonics_button = tk.Button(self.canvas, text="MNEMONICS", font=("Arial", 18), 
                                width=14, height=2, bg="#9C27B0", fg="white",
                                command=lambda: controller.show_frame(WordEntryPage_Mnemonics))
         mnemonics_button_window = self.canvas.create_window(547, 382, window=mnemonics_button)
         
-        # Back button (small, bottom left)  #13, 2, 95, 542
+        # Back button (small, bottom left)
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
                            width=13, height=2, bg="#ADD8E6",
                            command=lambda: [controller.reset_app_state(), controller.show_frame(MainPage)])
@@ -178,15 +194,15 @@ class WordEntryPage_Story(BackgroundFrame):
         # Text area for word entry
         self.words_text = tk.Text(self.canvas, wrap="word", font=("Arial", 12), 
                              height=11, width=50)
-     # Adjust the height of the input form  
         words_text_window = self.canvas.create_window(308, 300, window=self.words_text)
+        
         # Enter button
         enter_button = tk.Button(self.canvas, text="ENTER", font=("Arial", 18), 
                             width=14, height=2, bg="#9C27B0", fg="white",
                             command=lambda: self.process_words("Story"))
         enter_button_window = self.canvas.create_window(400, 496, window=enter_button)
         
-        # Back button (small, bottom left) #13, 2, 95, 542
+        # Back button (small, bottom left)
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
                            width=13, height=2, bg="#ADD8E6",
                            command=lambda: controller.show_frame(ReviewPage))
@@ -215,27 +231,29 @@ class WordEntryPage_Story(BackgroundFrame):
         self.controller.show_frame(ResultsPage)
     
     def create_story(self, words):
-        """Create a simple story using the provided words"""
-        # This is a placeholder - you will implement your own backend
-        story_parts = ["Once upon a time, there was a student who needed to learn new words."]
+        """Create a simple story using the provided words with AI"""
+        prompt = f"""
+        Create a short, simple, and fun story using the following words: {', '.join(words)}. 
+        The story should be suitable for a student learning these words. 
+        Limit the story to one paragraph (max 120 words).
+        """
         
-        for i, word in enumerate(words):
-            if i % 3 == 0:
-                story_parts.append(f"The student discovered the word '{word}' while reading a book.")
-            elif i % 3 == 1:
-                story_parts.append(f"Then, the student used '{word}' in a conversation.")
-            else:
-                story_parts.append(f"Later, the student wrote '{word}' in an essay.")
-        
-        story_parts.append("With practice, the student mastered all these words!")
-        
-        return " ".join(story_parts)
+        try:
+            response = client.chat.completions.create(
+                model="meta-llama/llama-4-maverick:free",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7
+            )
+            story = response.choices[0].message.content.strip()
+            return story
+        except Exception as e:
+            return f"Error generating story: {str(e)}"
 
 class WordEntryPage_Mnemonics(BackgroundFrame):
     def __init__(self, parent, controller):
         BackgroundFrame.__init__(self, parent, controller, "pics/4.png")
         
-        # Text area for word entry  #11, 50, 308, 300
+        # Text area for word entry
         self.words_text = tk.Text(self.canvas, wrap="word", font=("Arial", 12), 
                              height=11, width=50)
         words_text_window = self.canvas.create_window(308, 300, window=self.words_text)
@@ -246,7 +264,7 @@ class WordEntryPage_Mnemonics(BackgroundFrame):
                             command=lambda: self.process_words("Mnemonics"))
         enter_button_window = self.canvas.create_window(400, 496, window=enter_button)
         
-        # Back button (small, bottom left)  #13, 2, 95, 542
+        # Back button (small, bottom left)
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
                            width=13, height=2, bg="#ADD8E6",
                            command=lambda: controller.show_frame(ReviewPage))
@@ -263,28 +281,38 @@ class WordEntryPage_Mnemonics(BackgroundFrame):
         # Get the list of words
         word_list = [word.strip() for word in words.split('\n') if word.strip()]
         
+        if len(word_list) != 1:
+            messagebox.showwarning("Invalid Input", "Please enter exactly one word for mnemonics.")
+            return
+        
         # Update results page based on function type
         results_frame = self.controller.frames[ResultsPage]
         
-        # Create mnemonics for the entered words
-        mnemonics = self.create_mnemonics(word_list)
-        results_frame.set_content(f"Mnemonics for your words:\n\n{mnemonics}")
-        self.controller.add_to_history("Generated mnemonics for custom words")
+        # Create mnemonics for the entered word
+        mnemonics = self.create_mnemonics(word_list[0])
+        results_frame.set_content(f"Mnemonic for your word:\n\n{mnemonics}")
+        self.controller.add_to_history("Generated mnemonic for custom word")
         
         # Show results page
         self.controller.show_frame(ResultsPage)
     
-    def create_mnemonics(self, words):
-        """Create simple mnemonics for the provided words"""
-        # This is a placeholder - you will implement your own backend
-        result = []
+    def create_mnemonics(self, word):
+        """Create mnemonic for the provided word with AI"""
+        prompt = f"""
+        Create a fun and memorable mnemonic to help a student remember the word: "{word}". 
+        Use simple and creative logic that links the word to something familiar.
+        """
         
-        for word in words:
-            result.append(f"Word: {word}")
-            result.append(f"Mnemonic: Think of each letter in '{word}' as the start of a word in a sentence.")
-            result.append("")
-        
-        return "\n".join(result)
+        try:
+            response = client.chat.completions.create(
+                model="meta-llama/llama-4-maverick:free",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7
+            )
+            mnemonic = response.choices[0].message.content.strip()
+            return mnemonic
+        except Exception as e:
+            return f"Error generating mnemonic: {str(e)}"
 
 class NewWordsPage(BackgroundFrame):
     def __init__(self, parent, controller):
@@ -301,9 +329,6 @@ class NewWordsPage(BackgroundFrame):
         upload_button_window = self.canvas.create_window(402, 287, window=upload_button)
         
         # Quiz button
-                 #back: 13, 2, 95, 542
-         #left: 14, 2, 253, 382
-         #right: 14, 2, 547, 382
         quiz_button = tk.Button(self.canvas, text="QUIZ", font=("Arial", 18), 
                            width=14, height=2, bg="#3F51B5", fg="white",
                            command=lambda: self.show_results("Quiz"))
@@ -315,7 +340,7 @@ class NewWordsPage(BackgroundFrame):
                             command=lambda: self.show_results("Notes"))
         notes_button_window = self.canvas.create_window(548, 409, window=notes_button)
         
-        # Back button (small, bottom left)  #13, 2, 95, 542
+        # Back button (small, bottom left)
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
                            width=13 , height=2, bg="#ADD8E6",
                            command=lambda: [controller.reset_app_state(), controller.show_frame(MainPage)])
@@ -328,14 +353,80 @@ class NewWordsPage(BackgroundFrame):
             return
             
         results_frame = self.controller.frames[ResultsPage]
-        if function_type == "Quiz":
-            results_frame.set_content(f"Quiz based on your file: {os.path.basename(self.controller.selected_file)}\n\n1. What does 'ephemeral' mean?\na) Lasting forever\nb) Short-lived\nc) Beautiful\nd) Dangerous")
-            self.controller.add_to_history("Created a quiz")
-        else:  # Notes
-            results_frame.set_content(f"Study notes for: {os.path.basename(self.controller.selected_file)}\n\nWord: Ephemeral\nDefinition: Lasting for a very short time\nExample: The ephemeral beauty of cherry blossoms")
-            self.controller.add_to_history("Generated study notes")
+        try:
+            text = extract_text_from_file(self.controller.selected_file)
+            
+            if function_type == "Quiz":
+                quiz_content = self.generate_quiz(text)
+                results_frame.set_content(f"Quiz based on your file: {os.path.basename(self.controller.selected_file)}\n\n{quiz_content}")
+                self.controller.add_to_history("Created a quiz")
+            else:  # Notes
+                notes_content = self.generate_notes(text)
+                results_frame.set_content(f"Study notes for: {os.path.basename(self.controller.selected_file)}\n\n{notes_content}")
+                self.controller.add_to_history("Generated study notes")
+            
+            self.controller.show_frame(ResultsPage)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to process file: {str(e)}")
+    
+    def generate_quiz(self, text):
+        """Generate quiz from file content with AI"""
+        prompt = f"""
+        Generate 5 to 10 multiple-choice questions (MCQs) from the following content to help a student revise it. 
+        Each question should have 1 correct answer and 3 incorrect options. 
+        Keep it educational and appropriate for learners.
+        Return a JSON object with the following structure:
+        {{
+          "quiz": ["Question 1: ...", "Question 2: ...", "..."],
+          "answers": ["Answer 1: ...", "Answer 2: ...", "..."]
+        }}
+        [CONTENT FROM FILE]
+        {text}
+        """
         
-        self.controller.show_frame(ResultsPage)
+        try:
+            response = client.chat.completions.create(
+                model="meta-llama/llama-4-maverick:free",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7
+            )
+            raw_content = response.choices[0].message.content.strip()
+            json_str = extract_json_string(raw_content)
+            data = json.loads(json_str)
+            
+            quiz = data["quiz"]
+            answers = data["answers"]
+            
+            # Combine questions and answers for display
+            result = []
+            for q, a in zip(quiz, answers):
+                result.append(q)
+                result.append(a)
+                result.append("")
+            
+            return "\n".join(result)
+        except Exception as e:
+            return f"Error generating quiz: {str(e)}"
+    
+    def generate_notes(self, text):
+        """Generate study notes from file content with AI"""
+        prompt = f"""
+        Read the following content and write a clear, informative summary (around 200 words). 
+        Keep it concise and easy to understand for a student.
+        [CONTENT FROM FILE]
+        {text}
+        """
+        
+        try:
+            response = client.chat.completions.create(
+                model="meta-llama/llama-4-maverick:free",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7
+            )
+            notes = response.choices[0].message.content.strip()
+            return notes
+        except Exception as e:
+            return f"Error generating notes: {str(e)}"
 
 class ResultsPage(BackgroundFrame):
     def __init__(self, parent, controller):
@@ -350,7 +441,7 @@ class ResultsPage(BackgroundFrame):
                                padx=10, pady=10)
         self.results_text.pack(fill="both", expand=True)
         
-        # Back button (small, bottom left)  #13, 2, 95, 542
+        # Back button (small, bottom left)
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
                            width=13, height=2, bg="#ADD8E6",
                            command=lambda: [controller.reset_app_state(), controller.show_frame(MainPage)])
@@ -382,7 +473,7 @@ class HistoryPage(BackgroundFrame):
                                    height=20, width=70)
         self.history_list.pack(fill="both", expand=True, padx=10, pady=10)
         
-        # Back button (small, bottom left)  #13, 2, 95, 542
+        # Back button (small, bottom left)
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
                            width=13, height=2, bg="#ADD8E6",
                            command=lambda: controller.show_frame(MainPage))

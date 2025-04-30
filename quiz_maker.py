@@ -1,11 +1,11 @@
-from openai import OpenAI
+import os
 import fitz
 import docx
-import os
+from pptx import Presentation
+from openai import OpenAI
+from dotenv import load_dotenv
 import json
 import re
-from dotenv import load_dotenv
-from pptx import Presentation
 
 # Load environment variables
 load_dotenv()
@@ -40,10 +40,10 @@ def extract_text_from_file(filepath: str) -> str:
         raise ValueError("Unsupported file format")
 
 def extract_json_string(response_str):
-    json_match = re.search(r'{\s*".*?"\s*:\s*\[.*?\]\s*}', response_str, re.DOTALL)
+    json_match = re.search(r'{\s*".*?"\s*:\s*\[.*?\]\s*}|{\s*".*?"\s*:\s*".*?"\s*}', response_str, re.DOTALL)
     if json_match:
         return json_match.group()
-    raise ValueError("No valid JSON object found in the response.")
+    return None
 
 def generate_quiz_and_answers(text: str) -> dict:
     prompt = """
@@ -94,6 +94,8 @@ def generate_quiz_and_answers(text: str) -> dict:
         )
         raw_content = response.choices[0].message.content.strip()
         json_str = extract_json_string(raw_content)
+        if not json_str:
+            raise ValueError("No valid JSON object found in the response.")
         data = json.loads(json_str)
         if not isinstance(data, dict) or "quiz" not in data or "answers" not in data:
             raise ValueError("Response does not contain 'quiz' and 'answers' keys.")
@@ -146,6 +148,8 @@ def generate_notes(text: str) -> str:
         )
         raw_content = response.choices[0].message.content.strip()
         json_str = extract_json_string(raw_content)
+        if not json_str:
+            raise ValueError("No valid JSON object found in the response.")
         data = json.loads(json_str)
         if not isinstance(data, dict) or "notes" not in data:
             raise ValueError("Response does not contain 'notes' key.")
@@ -199,6 +203,8 @@ def generate_mnemonics(words: list) -> str:
         )
         raw_content = response.choices[0].message.content.strip()
         json_str = extract_json_string(raw_content)
+        if not json_str:
+            raise ValueError("No valid JSON object found in the response.")
         data = json.loads(json_str)
         if not isinstance(data, dict) or "mnemonics" not in data:
             raise ValueError("Response does not contain 'mnemonics' key.")
@@ -208,6 +214,62 @@ def generate_mnemonics(words: list) -> str:
         return "\n\n".join(mnemonics)
     except Exception as e:
         print(f"Error generating mnemonics: {e}")
+        return None
+
+def generate_story(words: list) -> str:
+    prompt = """
+    You are a creative storytelling assistant tasked with generating an engaging story based on a list of user-provided words.
+    Your goal is to create a coherent and imaginative narrative (300-500 words) that incorporates all the provided words in a meaningful way.
+    Follow these guidelines:
+    1. Analyze the Words:
+       - Consider the meaning, context, or potential thematic connections of each word.
+       - Use each word naturally within the story, ensuring it fits the narrative flow.
+    2. Generate the Story:
+       - Create a single, continuous narrative that uses all provided words at least once.
+       - The story should have a clear beginning, middle, and end.
+       - Make the story engaging, suitable for a general audience, and appropriate for educational use.
+       - Use a creative and vivid writing style to captivate the reader.
+    3. Format:
+       - Return a JSON object with a single key "story" containing the story as a single string.
+       - Do not include additional headings, labels, or formatting within the story text.
+    4. Edge Cases:
+       - If the word list is empty, return an empty string.
+       - If a word is complex or unclear, make a reasonable assumption about its meaning.
+       - If there are many words (e.g., >10), prioritize natural integration over forced usage.
+    5. Style:
+       - Use a professional yet creative tone.
+       - Ensure the story is clear, engaging, and suitable for study or entertainment purposes.
+    **Important: Only return a JSON object with the following exact structure:**
+    ```json
+    {
+      "story": "..."
+    }
+    ```
+    Ensure the story is a single string.
+    """
+    try:
+        response = client.chat.completions.create(
+            model="meta-llama/llama-4-maverick:free",
+            messages=[{"role": "user", "content": prompt + "\n\nWords: " + ", ".join(words)}],
+            temperature=0.7
+        )
+        raw_content = response.choices[0].message.content.strip()
+        json_str = extract_json_string(raw_content)
+        if json_str:
+            data = json.loads(json_str)
+            if not isinstance(data, dict) or "story" not in data:
+                raise ValueError("Response does not contain 'story' key.")
+            story = str(data["story"]).strip()
+            if not story and words:
+                raise ValueError("No story generated.")
+            return story
+        else:
+            # Fallback: Treat raw_content as the story if JSON parsing fails
+            if raw_content and len(raw_content) > 50:  # Ensure it's not just an error message
+                return raw_content.strip()
+            raise ValueError("No valid story content found in the response.")
+    except Exception as e:
+        print(f"Error generating story: {e}")
         return None
 
 def main(choice: str, filepath: str = None, words: list = None):
@@ -251,24 +313,35 @@ def main(choice: str, filepath: str = None, words: list = None):
             print("\n📝 Mnemonics:")
             print(mnemonics)
             return mnemonics, None
+        elif choice in ["story", "s"]:
+            if not words:
+                print("❌ No words provided.")
+                return None, None
+            story = generate_story(words)
+            if story is None:
+                print("⚠️ Failed to generate story.")
+                return None, None
+            print("\n📝 Story:")
+            print(story)
+            return story, None
         else:
-            print("❌ Invalid choice. Please enter 'quiz', 'notes', or 'mnemonics'.")
+            print("❌ Invalid choice. Please enter 'quiz', 'notes', 'mnemonics', or 'story'.")
             return None, None
     except Exception as e:
         print(f"⚠️ An error occurred: {e}")
         return None, None
 
 if __name__ == "__main__":
-    choice = input("📋 Do you want to generate a Quiz, Notes, or Mnemonics? (quiz/notes/mnemonics): ").strip().lower()
+    choice = input("📋 Do you want to generate a Quiz, Notes, Mnemonics, or Story? (quiz/notes/mnemonics/story): ").strip().lower()
     if choice in ["quiz", "q", "notes", "n"]:
         file_path = input("📎 Enter the path to your file: ").strip()
         result, answers = main(choice, filepath=file_path)
-    elif choice in ["mnemonics", "m"]:
-        words_input = input("📚 Enter words to generate mnemonics for (comma-separated): ").strip()
+    elif choice in ["mnemonics", "m", "story", "s"]:
+        words_input = input("📚 Enter words to generate mnemonics or story for (comma-separated): ").strip()
         words = [word.strip() for word in words_input.split(",") if word.strip()]
         result, answers = main(choice, words=words)
     else:
-        print("❌ Invalid choice. Please enter 'quiz', 'notes', or 'mnemonics'.")
+        print("❌ Invalid choice. Please enter 'quiz', 'notes', 'mnemonics', or 'story'.")
         result, answers = None, None
 
     if result and isinstance(result, list) and answers:  # For quiz
@@ -279,5 +352,5 @@ if __name__ == "__main__":
                 print(f"{i}. {a}")
         else:
             print("\n👍 You can come back to check the answers later.")
-    elif result and isinstance(result, str):  # For notes or mnemonics
+    elif result and isinstance(result, str):  # For notes, mnemonics, or story
         print("\n👍 Output generated successfully.")
