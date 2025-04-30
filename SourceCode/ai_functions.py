@@ -129,7 +129,7 @@ def notes_ai(text: str) -> str:
        - Use a professional academic tone.
        - Ensure the notes are clear, organized, and useful for studying.
     **Important: Only return a JSON object with the following exact structure:**
-    ```json
+    ```
         1. Bullet point 1
         2. Bullet point 2
         3. Bullet point 3
