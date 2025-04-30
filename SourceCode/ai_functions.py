@@ -6,7 +6,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import json
 import re
-
+#mnemonics_ai, story_ai, quiz_ai, notes_ai
 # Load environment variables
 load_dotenv()
 api_key = os.getenv("OPENROUTER_API_KEY")
