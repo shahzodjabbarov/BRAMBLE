@@ -11,7 +11,6 @@ class StudyApp(tk.Tk):
         self.title("Study Helper App")
         self.geometry("800x600")
         self.resizable(False, False)
-        
         # Create a container frame
         self.container = tk.Frame(self)
         self.container.pack(fill="both", expand=True)
@@ -167,7 +166,7 @@ class ReviewPage(BackgroundFrame):
         
         # Back button (small, bottom left)  #13, 2, 95, 542
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
-                           width=13, height=2, bg="#87CEEB",
+                           width=13, height=2, bg="#ADD8E6",
                            command=lambda: [controller.reset_app_state(), controller.show_frame(MainPage)])
         back_button_window = self.canvas.create_window(95, 542, window=back_button)
 
@@ -188,7 +187,7 @@ class WordEntryPage_Story(BackgroundFrame):
         
         # Back button (small, bottom left) #13, 2, 95, 542
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
-                           width=13, height=2, bg="#87CEEB",
+                           width=13, height=2, bg="#ADD8E6",
                            command=lambda: controller.show_frame(ReviewPage))
         back_button_window = self.canvas.create_window(95, 542, window=back_button)
     
@@ -248,7 +247,7 @@ class WordEntryPage_Mnemonics(BackgroundFrame):
         
         # Back button (small, bottom left)  #13, 2, 95, 542
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
-                           width=13, height=2, bg="#87CEEB",
+                           width=13, height=2, bg="#ADD8E6",
                            command=lambda: controller.show_frame(ReviewPage))
         back_button_window = self.canvas.create_window(95, 542, window=back_button)
     
@@ -317,7 +316,7 @@ class NewWordsPage(BackgroundFrame):
         
         # Back button (small, bottom left)  #13, 2, 95, 542
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
-                           width=13 , height=2, bg="#87CEEB",
+                           width=13 , height=2, bg="#ADD8E6",
                            command=lambda: [controller.reset_app_state(), controller.show_frame(MainPage)])
         back_button_window = self.canvas.create_window(95, 542, window=back_button)
     
@@ -352,7 +351,7 @@ class ResultsPage(BackgroundFrame):
         
         # Back button (small, bottom left)  #13, 2, 95, 542
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
-                           width=13, height=2, bg="#87CEEB",
+                           width=13, height=2, bg="#ADD8E6",
                            command=lambda: [controller.reset_app_state(), controller.show_frame(MainPage)])
         back_button_window = self.canvas.create_window(95, 542, window=back_button)
         
@@ -384,7 +383,7 @@ class HistoryPage(BackgroundFrame):
         
         # Back button (small, bottom left)  #13, 2, 95, 542
         back_button = tk.Button(self.canvas, text="BACK", font=("Arial", 10),
-                           width=13, height=2, bg="#87CEEB",
+                           width=13, height=2, bg="#ADD8E6",
                            command=lambda: controller.show_frame(MainPage))
         back_button_window = self.canvas.create_window(95, 542, window=back_button)
         
