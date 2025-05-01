@@ -45,7 +45,7 @@ def extract_text_from_file(filepath: str) -> str:
     else:
         raise ValueError("Unsupported file format")
 
-def quiz_ai(text: str):
+def generate_quiz_and_answers(text: str) -> dict:
     prompt = """
     You are an expert educational assistant tasked with creating a quiz based on the content of a user-uploaded file, typically a presentation (e.g., PowerPoint, PDF) provided by university professors.
     Your goal is to generate a short quiz to test understanding of the key concepts, facts, and ideas in the presentation.
@@ -70,6 +70,7 @@ def quiz_ai(text: str):
     4. Store Correct Answers Internally:
        - Prepare the correct answers in order.
        - Each answer should be a single, concise string.
+       - Only show them when the user requests them (e.g., "Show answers").
     5. Edge Cases:
        - If the content is too short, generate as many meaningful questions as possible (minimum 3).
        - If content is unclear, make a reasonable assumption.
@@ -77,35 +78,56 @@ def quiz_ai(text: str):
        - Use a professional academic tone.
        - Make the quiz engaging and challenging but fair.
     **Important: Only return a JSON object with the following exact structure:**
-    ```
-    Questions:
-    1. Question 1: ...
-    2. Question 2: ...
-    ...
-    Answers:
-    1. Answer 1: ...
-    2. Answer 2: ...
-    ...
+    ```json
+    {
+      "quiz": ["Question 1: ...", "Question 2: ...", "..."],
+      "answers": ["Answer 1: ...", "Answer 2: ...", "..."]
+    }
     ```
     Ensure each question and answer is a single string, even for complex answers.
     """
-    response = client.chat.completions.create(
-        model="meta-llama/llama-4-maverick:free",
-        messages=[{"role": "user", "content": prompt + "\n\n" + text}],
-        temperature=0.7
-    )
-    raw_content = response.choices[0].message.content.strip()
-    json_str = extract_json_string(raw_content)
-    if not json_str:
-        raise ValueError("No valid JSON object found in the response.")
-    data = json.loads(json_str)
-    if not isinstance(data, dict) or "quiz" not in data or "answers" not in data:
-        raise ValueError("Response does not contain 'quiz' and 'answers' keys.")
-    quiz = [str(q).strip() for q in data["quiz"]]
-    answers = [str(a).strip() for a in data["answers"]]
-    if len(quiz) != len(answers):
-        raise ValueError(f"Mismatch between number of questions ({len(quiz)}) and answers ({len(answers)}).")
-    return quiz, answers
+    try:
+        response = client.chat.completions.create(
+            model="meta-llama/llama-4-maverick:free",
+            messages=[{"role": "user", "content": prompt + "\n\n" + text}],
+            temperature=0.7
+        )
+        raw_content = response.choices[0].message.content.strip()
+        json_str = extract_json_string(raw_content)
+        if not json_str:
+            raise ValueError("No valid JSON object found in the response.")
+        data = json.loads(json_str)
+        if not isinstance(data, dict) or "quiz" not in data or "answers" not in data:
+            raise ValueError("Response does not contain 'quiz' and 'answers' keys.")
+        quiz = [str(q).strip() for q in data["quiz"]]
+        answers = [str(a).strip() for a in data["answers"]]
+        if len(quiz) != len(answers):
+            raise ValueError(f"Mismatch between number of questions ({len(quiz)}) and answers ({len(answers)}).")
+        return {"quiz": quiz, "answers": answers}
+    except Exception as e:
+        print(f"Error generating quiz: {e}")
+        return None
+
+
+def quiz_ai(text: str) -> str:
+    if not text.strip():
+        raise ValueError("Input text is empty or invalid.")
+    result = generate_quiz_and_answers(text)
+    if result is None:
+        raise ValueError("Failed to generate quiz. The file may lack sufficient material.")
+    quiz = result.get("quiz", [])
+    answers = result.get("answers", [])
+    if not quiz or not answers or len(quiz) != len(answers):
+        raise ValueError("Invalid quiz data: missing or mismatched questions and answers.")
+    formatted_output = []
+    for i, question in enumerate(quiz, 1):
+        cleaned_question = re.sub(r'^Question\s*\d+:\s*', '', question, flags=re.IGNORECASE).strip()
+        formatted_output.append(f"{i}. Question: {cleaned_question}")
+    formatted_output.append("Answers:")
+    for i, answer in enumerate(answers, 1):
+        cleaned_answer = re.sub(r'^Answer\s*\d+:\s*', '', answer, flags=re.IGNORECASE).strip()
+        formatted_output.append(f"{i}. Answer: {cleaned_answer}")
+    return "\n".join(formatted_output)
 
 
 def notes_ai(text: str) -> str:
