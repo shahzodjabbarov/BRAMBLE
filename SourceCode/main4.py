@@ -255,7 +255,7 @@ class WordEntryPage_Mnemonics(BackgroundFrame):
         
         # Create mnemonics for the entered words
         mnemonics = self.create_mnemonics(word_list)
-        results_frame.set_content(f"Mnemonics for your words:\n\n{mnemonics}")
+        results_frame.set_content(f"Mnemonics for your words:\{mnemonics}")
         self.controller.add_to_history("Generated mnemonics for custom words")
         
         # Show results page
@@ -265,7 +265,7 @@ class WordEntryPage_Mnemonics(BackgroundFrame):
         """Create simple mnemonics for the provided words"""
         # This is a placeholder - you will implement your own backend
         result = mnemonics_ai(words)
-        return "\n".join(result)
+        return "".join(result)
 
 class NewWordsPage(BackgroundFrame):
     def __init__(self, parent, controller):
@@ -310,10 +310,13 @@ class NewWordsPage(BackgroundFrame):
             
         results_frame = self.controller.frames[ResultsPage]
         if function_type == "Quiz":
-            results_frame.set_content(f"Quiz based on your file: {os.path.basename(self.controller.selected_file)}\n\n1. What does 'ephemeral' mean?\na) Lasting forever\nb) Short-lived\nc) Beautiful\nd) Dangerous")
+            quiz_result = quiz_ai(self.controller.selected_file)
+            results_frame.set_content(quiz_result)
             self.controller.add_to_history("Created a quiz")
+            
         else:  # Notes
-            results_frame.set_content(f"Study notes for: {os.path.basename(self.controller.selected_file)}\n\nWord: Ephemeral\nDefinition: Lasting for a very short time\nExample: The ephemeral beauty of cherry blossoms")
+            notes_result = notes_ai(self.controller.selected_file)
+            results_frame.set_content(notes_result)
             self.controller.add_to_history("Generated study notes")
         
         self.controller.show_frame(ResultsPage)
@@ -327,6 +330,7 @@ class ResultsPage(BackgroundFrame):
         content_frame_window = self.canvas.create_window(400, 288, window=content_frame, width=600, height=300)
         
         # Text widget to display results
+        
         self.results_text = tk.Text(content_frame, wrap="word", font=("Arial", 12), 
                                padx=10, pady=10)
         self.results_text.pack(fill="both", expand=True)
@@ -349,6 +353,7 @@ class ResultsPage(BackgroundFrame):
         self.results_text.delete(1.0, "end")
         self.results_text.insert("end", content)
         self.results_text.config(state="disabled")
+
 
 class HistoryPage(BackgroundFrame):
     def __init__(self, parent, controller):
