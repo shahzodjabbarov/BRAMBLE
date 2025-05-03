@@ -5,6 +5,7 @@ Video: https://drive.google.com/drive/folders/1qtrfKeg-hwr6UOGUfXoGg2tFJz9jw-sg
 Presenation File: https://www.canva.com/design/DAGmQonzvZ8/SWICjAAfmUvSQSt8qB3iXQ/view?utm_con..
 -----------------------------------------------------------------------------------
 Word File: https://docs.google.com/document/d/1lFHUOfT1DQvWn8n2v30cj_lYHVpy7fy4/edit?usp=sharing&ouid=114125003512331672850&rtpof=true&sd=true
+-----------------------------------------------------------------------------------
 
 # Brumble: AI-Powered Study Assistant
 Brumble is your smart study companion that transforms learning from tedious to engaging. Leveraging AI technology, it creates personalized study materials to help you learn faster and remember longer.
