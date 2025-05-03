@@ -40,9 +40,9 @@ Brumble is your smart study companion that transforms learning from tedious to e
    - Create a `.env` file in the project root
    - Add your OpenRouter API key: `OPENROUTER_API_KEY=your_key_here`
 
-4. Run the application
+4. Run the application (Main 4 is the main application)
    ```
-   python study_app.py
+   python main4.py
    ```
 
 ## 📖 How to Use
