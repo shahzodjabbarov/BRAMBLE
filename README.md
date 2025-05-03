@@ -66,10 +66,6 @@ Brumble is your smart study companion that transforms learning from tedious to e
 - **python-docx** - Word document processing
 - **python-pptx** - PowerPoint presentation processing
 
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## 🙏 Acknowledgments
 
 - Developed as part of a social coding project for advanced programming
